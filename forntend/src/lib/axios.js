@@ -1,9 +1,7 @@
 import axios from "axios";
-
-const API_HOST = window.location.hostname || "localhost";
-const API_URL = import.meta.env.VITE_API_URL;
-
+const BASE_URL = import.meta.env.MODE=="development" ? "http://localhost:3001/api": "/api";
 export const axiosInstance = axios.create({
-  baseURL: API_URL || (import.meta.env.PROD ? "/api" : `http://${API_HOST}:3001/api`),
-  withCredentials: true,
-});
+  baseURL: BASE_URL,
+  withCredentials: true,//send cokies with the rrquest
+}); 
+// axiosInstance configured to include credentials (cookies) for cross-site requests

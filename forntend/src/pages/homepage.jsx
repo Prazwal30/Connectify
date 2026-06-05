@@ -10,7 +10,7 @@ import { Link } from "react-router";
 import { CheckCircleIcon, MapPinIcon, UserPlusIcon, UsersIcon } from "lucide-react";
 import FriendCard, { getLanguageFlag } from "../components/Friendcard.jsx";
 import NoFriendsFound from "../components/NoFriendsFound.jsx";
-
+import {capitalize} from "../lib/utils.js"
 const capitalize = (value = "") => value.charAt(0).toUpperCase() + value.slice(1);
 
 const Homepage = () => {
@@ -44,7 +44,7 @@ const Homepage = () => {
     const outgoingIds = new Set();
     if (outgoingFriendReqs && outgoingFriendReqs.length > 0) {
       outgoingFriendReqs.forEach((req) => {
-        outgoingIds.add(req.recipient?._id || req.recipient);
+        outgoingIds.add(req.recipient._id);
       });
     }
     setOutgoingRequestsIds(outgoingIds);
