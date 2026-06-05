@@ -14,8 +14,10 @@ const navigate = useNavigate()
 const {mutate:signinmutation, isPending,error} =useMutation({
   mutationFn: signin,
   onSuccess:(data)=> {
-    queryClient.clear();
     queryClient.setQueryData(["authUser"], data.user);
+    queryClient.removeQueries({
+      predicate: (query) => query.queryKey[0] !== "authUser",
+    });
     navigate(data.user?.isOnboarded ? "/" : "/onboarding");
   },
 })

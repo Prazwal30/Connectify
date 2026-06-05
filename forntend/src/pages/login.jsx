@@ -16,8 +16,10 @@ const LoginPage = () => {
     const {mutate: loginMutation, isPending, error} = useMutation({
         mutationFn: login,
         onSuccess: (data) => {
-            queryClient.clear();
             queryClient.setQueryData(["authUser"], data.user);
+            queryClient.removeQueries({
+                predicate: (query) => query.queryKey[0] !== "authUser",
+            });
             navigate(data.user?.isOnboarded ? "/" : "/onboarding");
         },
     });
