@@ -17,11 +17,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3001;
-const isAllowedDevOrigin = (origin) => {
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  process.env.FRONTEND_URL,
+  process.env.CORS_ORIGIN,
+]
+  .filter(Boolean)
+  .flatMap((origin) => origin.split(","))
+  .map((origin) => origin.trim().replace(/\/$/, ""));
+
+const isAllowedOrigin = (origin) => {
   if (!origin) return true;
 
   try {
-    const { hostname, protocol } = new URL(origin);
+    const normalizedOrigin = origin.replace(/\/$/, "");
+    if (allowedOrigins.includes(normalizedOrigin)) return true;
+
+    const { hostname, protocol } = new URL(normalizedOrigin);
     const isPrivateNetwork =
       hostname === "localhost" ||
       hostname === "127.0.0.1" ||
@@ -37,7 +49,7 @@ const isAllowedDevOrigin = (origin) => {
 
 app.use(cors({
   origin: (origin, callback) => {
-    callback(null, isAllowedDevOrigin(origin));
+    callback(null, isAllowedOrigin(origin));
   },
   credentials: true//allow frontendto send cokies
   

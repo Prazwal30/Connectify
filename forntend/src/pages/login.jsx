@@ -2,7 +2,7 @@ import {useState} from "react";
 import {useQueryClient, useMutation} from "@tanstack/react-query";
 import { Zap } from "lucide-react";
 import { login } from "../lib/api.js";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 
 const LoginPage = () => {
@@ -12,9 +12,14 @@ const LoginPage = () => {
     });
 
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
     const {mutate: loginMutation, isPending, error} = useMutation({
         mutationFn: login,
-        onSuccess: () => queryClient.invalidateQueries({queryKey: ["authUser"]}),
+        onSuccess: (data) => {
+            queryClient.clear();
+            queryClient.setQueryData(["authUser"], data.user);
+            navigate(data.user?.isOnboarded ? "/" : "/onboarding");
+        },
     });
 
     const   handleLogin=(e) =>  {
