@@ -11,7 +11,7 @@ export default function useLogin() {
 
     return {
         error: mutation.error,
-        isPending: mutation.isLoading,
+        isPending: mutation.isPending,
         loginMutation: mutation.mutate,
     };
 }

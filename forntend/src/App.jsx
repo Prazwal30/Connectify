@@ -68,6 +68,7 @@ return (<div className="h-screen " data-theme={theme}>
    }
   />
  </Routes>
+ <Toaster />
  </div>
 )
 }

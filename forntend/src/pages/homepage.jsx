@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import {
   getUserFriends,
   getRecommendedUsers,
@@ -8,14 +8,12 @@ import {
 } from "../lib/api.js";
 import { Link } from "react-router";
 import { CheckCircleIcon, MapPinIcon, UserPlusIcon, UsersIcon } from "lucide-react";
-import FriendCard, { getLanguageFlag } from "../components/Friendcard.jsx";
+import FriendCard from "../components/Friendcard.jsx";
 import NoFriendsFound from "../components/NoFriendsFound.jsx";
-import {capitalize} from "../lib/utils.js"
-const capitalize = (value = "") => value.charAt(0).toUpperCase() + value.slice(1);
+import { capitalize, getLanguageFlag } from "../lib/utils.jsx";
 
 const Homepage = () => {
   const queryClient = useQueryClient();
-  const [outgoingRequestsIds, setOutgoingRequestsIds] = useState(new Set());
 
   const { data: friends = [], isLoading: loadingFriends } = useQuery({
     queryKey: ["friends"],
@@ -40,14 +38,8 @@ const Homepage = () => {
     },
   });
 
-  useEffect(() => {
-    const outgoingIds = new Set();
-    if (outgoingFriendReqs && outgoingFriendReqs.length > 0) {
-      outgoingFriendReqs.forEach((req) => {
-        outgoingIds.add(req.recipient._id);
-      });
-    }
-    setOutgoingRequestsIds(outgoingIds);
+  const outgoingRequestsIds = useMemo(() => {
+    return new Set((outgoingFriendReqs || []).map((req) => req.recipient?._id || req.recipient));
   }, [outgoingFriendReqs]);
 
   return (
