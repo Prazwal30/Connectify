@@ -6,7 +6,10 @@ export default function useSignin() {
 
     const { mutate: signinMutation, isPending, error } = useMutation({
         mutationFn: signin,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["authUser"] }),
+        onSuccess: (data) => {
+            queryClient.setQueryData(["authUser"], data.user);
+            queryClient.invalidateQueries({ queryKey: ["authUser"] });
+        },
     });
 
     return { error, isPending, signinMutation };

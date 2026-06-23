@@ -1,6 +1,14 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import { upsertStreamUser } from "../lib/stream.js";
+
+const cookieOptions = {
+maxAge: 7*24*60*60*1000,
+httpOnly:true,
+sameSite:process.env.NODE_ENV==="production" ? "none" : "strict",
+secure:process.env.NODE_ENV==="production",
+};
+
 export async function signin(req, res) {
 
     const { email, password, fullName } = req.body;
@@ -42,12 +50,7 @@ console.log(`stream user created ${newUser.fullName}`);
 }
 
 const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-res.cookie("jwt", token, {
-maxAge: 7*24*60*60*1000,
-httpOnly:true,
-sameSite:process.env.NODE_ENV==="production" ? "none" : "strict",
-secure:process.env.NODE_ENV==="production",
-    })
+res.cookie("jwt", token, cookieOptions)
     res.status(201).json({message:"User created successfully", user:newUser});
     }catch(error){
  console.error("Error in signin:", error);
@@ -84,13 +87,8 @@ if(!ispasswordCorrect){
 
 await user.save();
 const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-res.cookie("jwt", token, {
-maxAge: 7*24*60*60*1000,
-httpOnly:true,
-sameSite:process.env.NODE_ENV==="production" ? "none" : "strict",
-secure:process.env.NODE_ENV==="production",
-    })
-    res.status(201).json({message:"User logged in successfully", user:user});
+res.cookie("jwt", token, cookieOptions)
+    res.status(200).json({message:"User logged in successfully", user:user});
     }catch(error){
  console.error("Error in login:", error);
  res.status(500).json({message:"Internal server error"});
@@ -100,7 +98,7 @@ secure:process.env.NODE_ENV==="production",
 
 
 export  function logout(req, res) {
-   res.clearCookie("jwt");
+   res.clearCookie("jwt", cookieOptions);
    res.status(200).json({message:"Logged out successfully"});  
 }
 export async function updateProfile(req,res){

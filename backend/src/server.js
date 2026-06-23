@@ -12,12 +12,36 @@ dotenv.config({ override: true });
 const app = express();
 
 const PORT = process.env.PORT || 3001;
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.CLIENT_URL,
+  process.env.CORS_ORIGIN,
+  "http://localhost:5173",
+]
+  .filter(Boolean)
+  .flatMap((origin) => origin.split(","))
+  .map((origin) => origin.trim().replace(/\/$/, ""));
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+
+  const normalizedOrigin = origin.replace(/\/$/, "");
+  if (allowedOrigins.includes(normalizedOrigin)) return true;
+
+  try {
+    const { hostname, protocol } = new URL(normalizedOrigin);
+    return protocol === "https:" && hostname.endsWith(".netlify.app");
+  } catch {
+    return false;
+  }
+};
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
- 
-  
-  credentials: true//allow frontendto send cokies
-  
+  origin: (origin, callback) => {
+    if (isAllowedOrigin(origin)) return callback(null, true);
+    return callback(new Error(`CORS blocked origin: ${origin}`));
+  },
+  credentials: true
 }));
 
 app.use(express.json());
