@@ -4,7 +4,6 @@ import connectDB from "./lib/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import path from "path";
 
 import userRoutes from "./routes/user.Routes.js";
 import chatRoutes from "./routes/chat.Routes.js";
@@ -29,14 +28,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 
-if(process.env.NODE_ENV==="production")
-{
-    app.use(express.static(path.join(__dirname,"../forntend/dist")));
-
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname,"../forntend/dist/index.html"));
-});
-}
 connectDB().then(() => {
     const server = app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);
