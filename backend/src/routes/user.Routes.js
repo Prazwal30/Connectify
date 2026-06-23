@@ -1,20 +1,25 @@
-import express from"express";
-import{protctRoute}from"../middleware/auth.middleware.js";
-import{getRecommendedUsers,getMFriends}from"../Controlers/user.controllers.js";
-import {sendFriendRequest}from"../Controlers/friend.controllers.js";
-import { getFriendRequests } from "../Controlers/user.controllers.js";
-import { getOutgoingFriendRequests } from "../Controlers/user.controllers.js";
+import express from "express";
+import { protectRoute } from "../middleware/auth.middleware.js";
+import {
+  acceptFriendRequest,
+  getFriendRequests,
+  getOutgoingFriendReqs,
+  getRecommendedUsers,
+  getUserFriends,
+  sendFriendRequest,
+} from "../Controlers/user.controllers.js";
 
-const router=express.Router();
-router.get("/",getRecommendedUsers);
-router.get("/friends",getMyFriends);
+const router = express.Router();
 
-router.post("/friends-request/:id",sendFriendRequest);
-router.put("/friend-request/:id/accept",acceptFriendRequest);
+router.use(protectRoute);
 
-router.get("/friend-requests",getFriendRequests);
-router.get("/outgoing-friend-requests",getOutgoingFriendRequests);
+router.get("/recommended", getRecommendedUsers);
+router.get("/friends", getUserFriends);
 
+router.post("/friend-request/:recipientId", sendFriendRequest);
+router.put("/friend-request/:requestId/accept", acceptFriendRequest);
 
+router.get("/friend-requests", getFriendRequests);
+router.get("/friend-requests/outgoing", getOutgoingFriendReqs);
 
 export default router;
