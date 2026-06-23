@@ -14,6 +14,9 @@ const useLogout = () => {
       queryClient.setQueryData(["authUser"], null);
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
+    onSettled: () => {
+      localStorage.removeItem("connectify-token");
+    },
   });
 
   return { logoutMutation, isPending, error };

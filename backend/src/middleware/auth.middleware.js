@@ -22,6 +22,6 @@ export async function protectRoute(req, res, next) {
         next();
     } catch (error) {
         console.error("Error in protectRoute:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(401).json({ message: "Unauthorized: Invalid or expired token" });
     }
 }

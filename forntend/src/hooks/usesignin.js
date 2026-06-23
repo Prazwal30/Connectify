@@ -7,6 +7,9 @@ export default function useSignin() {
     const { mutate: signinMutation, isPending, error } = useMutation({
         mutationFn: signin,
         onSuccess: (data) => {
+            if (data.token) {
+                localStorage.setItem("connectify-token", data.token);
+            }
             queryClient.setQueryData(["authUser"], data.user);
             queryClient.invalidateQueries({ queryKey: ["authUser"] });
         },

@@ -7,3 +7,11 @@ export const axiosInstance = axios.create({
   baseURL: API_URL || (import.meta.env.PROD ? "/api" : `http://${API_HOST}:3001/api`),
   withCredentials: true,
 });
+
+axiosInstance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("connectify-token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
