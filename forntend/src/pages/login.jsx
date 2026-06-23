@@ -11,6 +11,10 @@ const LoginPage = () => {
     });
 
 const {isPending,error,loginMutation} = useLogin();
+const errorMessage =
+    error?.response?.data?.message ||
+    error?.message ||
+    "Could not connect to the server. Check VITE_API_URL and CORS settings.";
 const handleLogin = (e) => {
     e.preventDefault();
     loginMutation(loginData);
@@ -31,7 +35,7 @@ const handleLogin = (e) => {
         {/*eooe in mesageing*/}
        {error && (
         <div className="alert alert-error mb-4">
-            <span>{error.response?.data?.message}</span>
+            <span>{errorMessage}</span>
         </div>
        )
 

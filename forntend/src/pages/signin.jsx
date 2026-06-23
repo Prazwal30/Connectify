@@ -10,6 +10,10 @@ email:"",
 password:"",    
 }); 
 const {error,isPending,signinMutation} = useSignin();
+const errorMessage =
+  error?.response?.data?.message ||
+  error?.message ||
+  "Could not connect to the server. Check VITE_API_URL and CORS settings.";
 const handleSignin=(e)=>{
     e.preventDefault();  
     signinMutation(signindata);
@@ -29,7 +33,7 @@ const handleSignin=(e)=>{
           {/*error*/}
 {error && (
   <div className="alert alert-error mb-4">
-  <span>{error.response?.data?.message}</span>
+  <span>{errorMessage}</span>
   </div>
 )}
 

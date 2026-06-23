@@ -23,6 +23,13 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+app.get("/", (req, res) => {
+    res.status(200).json({ message: "Connectify API is running" });
+});
+
+app.get("/api/health", (req, res) => {
+    res.status(200).json({ message: "OK" });
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
