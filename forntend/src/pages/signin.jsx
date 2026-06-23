@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Zap } from "lucide-react";
 import {Link} from "react-router";
+import useSignin from "../hooks/usesignin.js";
 
 const Signin = () => {
 const [signindata,setSignindata]=useState({
@@ -8,11 +9,10 @@ fullName:"",
 email:"",
 password:"",    
 }); 
-const queryClient =useQueryClient()
-const {error,isPending,signinMutation} =UseSignin();
+const {error,isPending,signinMutation} = useSignin();
 const handleSignin=(e)=>{
     e.preventDefault();  
-    signinmutation(signindata);
+    signinMutation(signindata);
 }
   return (
     <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8" data-theme="forest">
