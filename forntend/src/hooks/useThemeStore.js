@@ -1,25 +1,12 @@
-import { useSyncExternalStore } from "react";
+import { create } from 'zustand'
 
-let theme = localStorage.getItem("connectify-theme") || "night";
-const listeners = new Set();
-
-const subscribe = (listener) => {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-};
-
-const getSnapshot = () => theme;
-
-const setTheme = (nextTheme) => {
-  theme = nextTheme;
-  localStorage.setItem("connectify-theme", nextTheme);
-  listeners.forEach((listener) => listener());
-};
-
-const useThemeStore = () => {
-  const currentTheme = useSyncExternalStore(subscribe, getSnapshot);
-
-  return { theme: currentTheme, setTheme };
-};
+const useThemeStore = create((set) => ({
+    theme: localStorage.getItem("connectify-theme")||"light",
+    setTheme: (theme)=>
+    {
+        localStorage.setItem("connectify-theme",theme)
+        set({theme});
+    }
+}))
 
 export default useThemeStore;

@@ -2,7 +2,7 @@ import {useState} from "react";
 import {useQueryClient, useMutation} from "@tanstack/react-query";
 import { Zap } from "lucide-react";
 import { login } from "../lib/api.js";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 
 
 const LoginPage = () => {
@@ -12,27 +12,8 @@ const LoginPage = () => {
     });
 
     const queryClient = useQueryClient();
-    const navigate = useNavigate();
-    const {mutate: loginMutation, isPending, error} = useMutation({
-        mutationFn: login,
-        onSuccess: (data) => {
-            queryClient.setQueryData(["authUser"], data.user);
-            queryClient.removeQueries({
-                predicate: (query) => query.queryKey[0] !== "authUser",
-            });
-            navigate(data.user?.isOnboarded ? "/" : "/onboarding");
-        },
-    });
-
-    const   handleLogin=(e) =>  {
-        e.preventDefault();
-        loginMutation(loginData);
-    }
-
-    const errorMessage =
-        error?.response?.data?.message ||
-        (error?.message === "Network Error" ? "Cannot connect to backend server" : error?.message) ||
-        "Login failed";
+   
+const {isPending,error,loginMutation} = useLogin();
     
     return (
         <div className="h-screen flex items-center justify-center p-4 sm:p-6 md:p-8" data-theme="forest">
@@ -49,7 +30,7 @@ const LoginPage = () => {
         {/*eooe in mesageing*/}
        {error && (
         <div className="alert alert-error mb-4">
-            <span>{errorMessage}</span>
+            <span>{error.response?.data?.message}</span>
         </div>
        )
 

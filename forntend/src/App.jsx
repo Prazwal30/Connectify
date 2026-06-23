@@ -49,12 +49,13 @@ return (<div className="h-screen " data-theme={theme}>
     ):(
       <Navigate to="/login"/>
     ) }/>
-  <Route path="/call" element={isAuthenticated ?<CallPage/> : <Navigate to="/login" />}/>
-  <Route path="/chat/:id" element={isAuthenticated ? (
-    <Layout>
-      <ChatPage/>
-    </Layout>
-  ) : <Navigate to="/login" />}/>
+  <Route path="/call/:id" 
+  element={isAuthenticated && isOnboarded ?(<CallPage/>) :( <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />)}/>
+  <Route path="/chat/:id" 
+  element={isAuthenticated &&isOnboarded?(
+  <Layout showSidebar={false}>
+    <ChatPage/> 
+  </Layout> ):( <Navigate to={!isAuthenticated ? "/login" : "/onboarding"}/>)}/>
   <Route
    path="/notifications"
    element={
@@ -68,7 +69,6 @@ return (<div className="h-screen " data-theme={theme}>
    }
   />
  </Routes>
- <Toaster />
  </div>
 )
 }

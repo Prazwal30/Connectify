@@ -18,10 +18,10 @@ const friendRequestSchema = new mongoose.Schema(
       default: "pending",
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
-
-friendRequestSchema.index({ sender: 1, recipient: 1 }, { unique: true });
 
 const FriendRequest = mongoose.model("FriendRequest", friendRequestSchema);
 

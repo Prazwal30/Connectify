@@ -31,10 +31,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "",
     },
-    location: {
-        type: String,
-        default: "",
-    },
     isOnboarded: {
         type: Boolean,
         default: false,

@@ -1,22 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
-import { axiosInstance } from "../lib/axios.js";
-
+import { getAuthUser } from "../lib/api.js"
+import { useQuery} from "@tanstack/react-query"
 const useAuthUser = () => {
-  const { data: authUser, isLoading } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: async () => {
-      try {
-        const response = await axiosInstance.get("/auth/me");
-        return response.data.user;
-      } catch (error) {
-        if (error.response?.status === 401) return null;
-        throw error;
-      }
-    },
-    retry: false,
-  });
+  
+const authUser = useQuery({
+  queryKey: ["authUser"],
+  queryFn: getAuthUser,
+  retry:false,
+});
 
-  return { authUser, isLoading };
-};
+return {isLoading:authUser.isLoading, authUser: authUser.data?.user}
+
+}
 
 export default useAuthUser;

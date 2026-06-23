@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Zap } from "lucide-react";
-import {Link, useNavigate} from "react-router";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import{signin} from "../lib/api.js"
+import {Link} from "react-router";
+
 const Signin = () => {
 const [signindata,setSignindata]=useState({
 fullName:"",
@@ -10,25 +9,11 @@ email:"",
 password:"",    
 }); 
 const queryClient =useQueryClient()
-const navigate = useNavigate()
-const {mutate:signinmutation, isPending,error} =useMutation({
-  mutationFn: signin,
-  onSuccess:(data)=> {
-    queryClient.setQueryData(["authUser"], data.user);
-    queryClient.removeQueries({
-      predicate: (query) => query.queryKey[0] !== "authUser",
-    });
-    navigate(data.user?.isOnboarded ? "/" : "/onboarding");
-  },
-})
+const {error,isPending,signinMutation} =UseSignin();
 const handleSignin=(e)=>{
     e.preventDefault();  
     signinmutation(signindata);
 }
-const errorMessage =
-  error?.response?.data?.message ||
-  (error?.message === "Network Error" ? "Cannot connect to backend server" : error?.message) ||
-  "Signin failed";
   return (
     <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8" data-theme="forest">
   <div className="border border-primary/25 flex flex-col lg:flex-row w-full max-w-5xl mx-auto bg-base-100 rounded-xl shadow-lg overflow-hidden">
@@ -44,7 +29,7 @@ const errorMessage =
           {/*error*/}
 {error && (
   <div className="alert alert-error mb-4">
-  <span>{errorMessage}</span>
+  <span>{error.response?.data?.message}</span>
   </div>
 )}
 
@@ -112,8 +97,16 @@ const errorMessage =
        </span>
       </label>
   </div>
-  <button className="btn btn-primary w-full" type="submit" disabled={isPending}>
-   {isPending ? "Signin...": "Create Account"}
+  <button className="btn btn-primary w-full" type="submit">
+   {
+    isPending ? (
+      <>
+      <span className="loading loading-spinner-xs"></span>
+    </>
+    ) :(
+       "create Account"
+    )
+   }
   </button>
 <div className="text-center mt-4">
   <p className="text-sm">

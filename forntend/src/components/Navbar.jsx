@@ -3,7 +3,7 @@ import { LogOutIcon } from "lucide-react";
 import { Zap } from "lucide-react";
 import useAuthUser from "../hooks/useAuthuser.js";
 import ThemeSelector from "./ThemeSelector.jsx";
-import { useLogout } from "../hooks/useLogout.js";
+import useLogout from "../hooks/useLogout.js";
 import { BellIcon} from "lucide-react";
 
 

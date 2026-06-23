@@ -4,53 +4,19 @@ import connectDB from "./lib/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 
 import userRoutes from "./routes/user.Routes.js";
 import chatRoutes from "./routes/chat.Routes.js";
 dotenv.config({ override: true });
 
 const app = express();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3001;
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  process.env.FRONTEND_URL,
-  process.env.CORS_ORIGIN,
-]
-  .filter(Boolean)
-  .flatMap((origin) => origin.split(","))
-  .map((origin) => origin.trim().replace(/\/$/, ""));
-
-const isAllowedOrigin = (origin) => {
-  if (!origin) return true;
-
-  try {
-    const normalizedOrigin = origin.replace(/\/$/, "");
-    if (allowedOrigins.includes(normalizedOrigin)) return true;
-
-    const { hostname, protocol } = new URL(normalizedOrigin);
-    const isPrivateNetwork =
-      hostname === "localhost" ||
-      hostname === "127.0.0.1" ||
-      /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
-      /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
-      /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(hostname);
-
-    return protocol === "http:" && isPrivateNetwork;
-  } catch {
-    return false;
-  }
-};
-
 app.use(cors({
-  origin: (origin, callback) => {
-    callback(null, isAllowedOrigin(origin));
-  },
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+ 
+  
   credentials: true//allow frontendto send cokies
   
 }));
@@ -63,30 +29,27 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 
-const frontendPath = path.join(__dirname, "../../forntend/dist");
-if (fs.existsSync(frontendPath)) {
-  app.use(express.static(frontendPath));
+if(process.env.NODE_ENV==="production")
+{
+    app.use(express.static(path.join(__dirname,"../forntend/dist")));
 
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(frontendPath, "index.html"));
-  });
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname,"../forntend/dist/index.html"));
+});
 }
+connectDB().then(() => {
+    const server = app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
 
-const server = app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+    server.on("error", (error) => {
+        if (error.code === "EADDRINUSE") {
+            console.log(`Server is already running on http://localhost:${PORT}`);
+            process.exit(0);
+        }
+    });
 
-server.on("error", (error) => {
-    if (error.code === "EADDRINUSE") {
-        console.log(`Server is already running on http://localhost:${PORT}`);
-        process.exit(0);
-    }
-});
-
-process.once("SIGUSR2", () => {
-    server.close(() => process.kill(process.pid, "SIGUSR2"));
-});
-
-connectDB().catch((error) => {
-    console.error("MongoDB connection failed:", error.message);
+    process.once("SIGUSR2", () => {
+        server.close(() => process.kill(process.pid, "SIGUSR2"));
+    });
 });
