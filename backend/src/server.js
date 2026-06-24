@@ -12,35 +12,8 @@ dotenv.config({ override: true });
 const app = express();
 
 const PORT = process.env.PORT || 3001;
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  process.env.CLIENT_URL,
-  process.env.CORS_ORIGIN,
-  "http://localhost:5173",
-]
-  .filter(Boolean)
-  .flatMap((origin) => origin.split(","))
-  .map((origin) => origin.trim().replace(/\/$/, ""));
-
-const isAllowedOrigin = (origin) => {
-  if (!origin) return true;
-
-  const normalizedOrigin = origin.replace(/\/$/, "");
-  if (allowedOrigins.includes(normalizedOrigin)) return true;
-
-  try {
-    const { hostname, protocol } = new URL(normalizedOrigin);
-    return protocol === "https:" && hostname.endsWith(".netlify.app");
-  } catch {
-    return false;
-  }
-};
-
 app.use(cors({
-  origin: (origin, callback) => {
-    if (isAllowedOrigin(origin)) return callback(null, true);
-    return callback(new Error(`CORS blocked origin: ${origin}`));
-  },
+  origin: true,
   credentials: true
 }));
 
@@ -58,6 +31,14 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
+
+app.use((req, res) => {
+    res.status(404).json({
+        message: "Route not found",
+        method: req.method,
+        path: req.originalUrl,
+    });
+});
 
 connectDB().then(() => {
     const server = app.listen(PORT, () => {
