@@ -12,20 +12,28 @@ dotenv.config({ override: true });
 const app = express();
 
 const PORT = process.env.PORT || 3001;
-const allowedOrigins = [
+const allowedOrigins = new Set([
   "https://connecttifyyy.netlify.app",
-];
+  process.env.CLIENT_URL,
+  process.env.FRONTEND_URL,
+].filter(Boolean).map((origin) => origin.replace(/\/$/, "")));
 
-app.use(cors({
+const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    const normalizedOrigin = origin?.replace(/\/$/, "");
+
+    if (!origin || allowedOrigins.has(normalizedOrigin)) {
       return callback(null, true);
     }
 
     return callback(new Error("Not allowed by CORS"));
   },
-  credentials: true
-}));
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
