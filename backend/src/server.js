@@ -12,8 +12,18 @@ dotenv.config({ override: true });
 const app = express();
 
 const PORT = process.env.PORT || 3001;
+const allowedOrigins = [
+  "https://connecttifyyy.netlify.app",
+];
+
 app.use(cors({
-  origin: true,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
   credentials: true
 }));
 
