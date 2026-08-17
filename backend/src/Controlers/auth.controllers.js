@@ -104,31 +104,33 @@ export  function logout(req, res) {
 export async function updateProfile(req,res){
     try{
         const userID=req.user._id;
-        const {fullName,bio,nativeLanguage,learningLanguage,location}=req.body;
-        const updatedFields = {fullName,bio,nativeLanguage,learningLanguage,location};
+        const {fullName,bio,nativeLanguage,learningLanguage,location,profilepic}=req.body;
+        const requiredFields = {fullName,bio,nativeLanguage,learningLanguage,location};
+        const hasMissingField = Object.values(requiredFields).some(
+            (value) => typeof value !== "string" || !value.trim()
+        );
 
-        Object.keys(updatedFields).forEach((key) => {
-            if (updatedFields[key] === undefined) delete updatedFields[key];
-        });
+        if(hasMissingField){
+            return res.status(400).json({message:"All fields are required"});
+        }
 
-    if(Object.keys(updatedFields).length === 0){
-  return res.status(400).json({message:"Please provide at least one field to update"});
-    }
-const updateduser=await User.findByIdAndUpdate(userID,updatedFields,{new:true});
+        const updatedFields = Object.fromEntries(
+            Object.entries(requiredFields).map(([key, value]) => [key, value.trim()])
+        );
+        updatedFields.profilepic =
+            typeof profilepic === "string" && profilepic.trim()
+                ? profilepic.trim()
+                : req.user.profilepic || `https://api.dicebear.com/9.x/avataaars/svg?seed=${userID}`;
+        updatedFields.isOnboarded = true;
+
+const updateduser=await User.findByIdAndUpdate(userID,updatedFields,{new:true,runValidators:true});
 if(!updateduser){    return res.status(404).json({message:"User not found"});
 }
-try{
-await upsertStreamUser({
+void upsertStreamUser({
     id:updateduser._id.toString(),
     name:updateduser.fullName,
     image:updateduser.profilepic||"",
-});
-console.log(`stream user updated ${updateduser.fullName}`);
-}
-catch(streamerror)
-{
-console.log("Error updating stream user:", streamerror.message);
-}
+}).then(() => console.log(`stream user updated ${updateduser.fullName}`));
 
 res.status(200).json({message:"User updated successfully",user:updateduser});
 

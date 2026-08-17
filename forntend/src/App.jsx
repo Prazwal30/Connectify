@@ -24,6 +24,7 @@ if(isLoading) return <PageLoader/>;
 
 
 return (<div className="h-screen " data-theme={theme}>
+ <Toaster />
  <Routes>
   <Route path="/" element=
   {isAuthenticated && isOnboarded ? (

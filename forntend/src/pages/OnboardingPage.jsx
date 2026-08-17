@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CameraIcon, LoaderIcon, MapPinIcon, ShuffleIcon, Zap } from "lucide-react";
 import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router";
 import { completeOnboarding } from "../lib/api.js";
 import useAuthUser from "../hooks/useAuthuser.js"
 
@@ -24,6 +25,7 @@ const LANGUAGES = [
 const OnboardingPage = () => {
   const { authUser } = useAuthUser();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const [formState, setFormState] = useState({
     fullName: authUser?.fullName || "",
@@ -36,9 +38,13 @@ const OnboardingPage = () => {
 
 const {mutate:onboardingMutation,isPending}=useMutation({
 mutationFn:completeOnboarding,
-onSuccess: ()=>{
-    toast.success(" Profile Onboarded Successfully");   
-    queryClient.invalidateQueries({queryKey:["authUser"]});
+onSuccess: (data)=>{
+    queryClient.setQueryData(["authUser"], {
+      ...data.user,
+      isOnboarded: true,
+    });
+    toast.success("Profile onboarded successfully");
+    navigate("/", { replace: true });
 },
 onError : (error)=>{
 toast.error(error.response?.data?.message || "All fields are required");
@@ -51,8 +57,7 @@ if (
   !formState.bio.trim() ||
   !formState.nativeLanguage.trim() ||
   !formState.learningLanguage.trim() ||
-  !formState.location.trim() ||
-  !formState.profilepic.trim()
+  !formState.location.trim()
 ) {
   toast.error("All fields are required");
   return;
@@ -63,13 +68,13 @@ const handleRandomAvatar = () => {
 const idx = Math.floor(Math.random()*100)+1;
 const randomAvatar = `https://api.dicebear.com/9.x/avataaars/svg?seed=${idx}`;
 setFormState({ ...formState, profilepic: randomAvatar });
-toast.success("Avatar changes successfully");
+toast.success("Avatar changed successfully");
 }
 return(
 <div className="min-h-screen bg-base-100 flex items-center justify-center p-4">
 <div className="card bg-base-200 w-full max-w-3xl">
     <div className="card-body p-6 sm:p-8 ">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6">Complete you Probile</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6">Complete Your Profile</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
             {/*profile pic*/}
             <div className="flex flex-col items-center justify-center space-y-4">
@@ -95,7 +100,9 @@ return(
                   Generate Random Avatar
                 </button>
               </div>
-               {/* FULL NAME */}
+            </div>
+
+            {/* FULL NAME */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Full Name</span>
@@ -109,19 +116,8 @@ return(
                 placeholder="Your full name"
               />
             </div>
-             {/* FULL NAME */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Full Name</span>
-              </label>
-              <input
-                type="text"
-                name="fullName"
-                value={formState.fullName}
-                onChange={(e) => setFormState({ ...formState, fullName: e.target.value })}
-                className="input input-bordered w-full"
-                placeholder="Your full name"
-              /> {/* BIO */}
+
+            {/* BIO */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Bio</span>
@@ -211,8 +207,6 @@ return(
                 </>
               )}
             </button>
-            </div>
-            </div>
 
         </form>
     </div>
