@@ -50,7 +50,9 @@ return (<div className="h-screen " data-theme={theme}>
     ):(
       <Navigate to="/login"/>
     ) }/>
-  <Route path="/call/:id" 
+  <Route path="/call"
+  element={isAuthenticated && isOnboarded ?(<CallPage/>) :( <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />)}/>
+  <Route path="/call/:id"
   element={isAuthenticated && isOnboarded ?(<CallPage/>) :( <Navigate to={!isAuthenticated ? "/login" : "/onboarding"} />)}/>
   <Route path="/chat/:id" 
   element={isAuthenticated &&isOnboarded?(

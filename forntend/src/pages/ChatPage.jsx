@@ -84,14 +84,19 @@ if (isMounted) {
     if (client) client.disconnectUser();
   };
 },[tokenData,authUser,targetUserId,isTokenLoading,tokenError ]);
-const handleVideoCall=()=>{
+const handleVideoCall=async()=>{
   if(channel){
-    const callUrl=`${window.location.origin}/call?channelId=${channel.id}`;
+    try {
+      const callUrl=`${window.location.origin}/call/${encodeURIComponent(channel.id)}`;
 
-    channel.sendMessage({
-      text:`Video call initiated. Click to join: ${callUrl}`,
-    })
-    toast.success("Video call link sent in chat!");
+      await channel.sendMessage({
+        text:`Video call initiated. Click to join: ${callUrl}`,
+      });
+      toast.success("Video call link sent in chat!");
+    } catch (error) {
+      console.error("Error sending call link:", error);
+      toast.error("Could not send the call link.");
+    }
   }
 }
 if(loading) return <ChatLoader/>;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import useAuthUser from "../hooks/useAuthuser.js";
 import { useQuery } from "@tanstack/react-query";
 import { getStreamToken } from "../lib/api.js";
@@ -23,7 +23,8 @@ const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
 const CallPage = () => {
   const [searchParams] = useSearchParams();
-  const callId = searchParams.get("channelId");
+  const { id: routeCallId } = useParams();
+  const callId = routeCallId || searchParams.get("channelId");
   const [client, setClient] = useState(null);
   const [call, setCall] = useState(null);
   const [isConnecting, setIsConnecting] = useState(true);
@@ -37,9 +38,13 @@ const CallPage = () => {
   });
 
   useEffect(() => {
+    let videoClient;
+    let callInstance;
+    let isMounted = true;
+
     const initCall = async () => {
       if (!authUser || isTokenLoading) return;
-      if (!callId || tokenError || !tokenData?.token) {
+      if (!STREAM_API_KEY || !callId || tokenError || !tokenData?.token) {
         setIsConnecting(false);
         return;
       }
@@ -53,29 +58,37 @@ const CallPage = () => {
           image: authUser.profilepic,
         };
 
-        const videoClient = new StreamVideoClient({
+        videoClient = new StreamVideoClient({
           apiKey: STREAM_API_KEY,
           user,
           token: tokenData.token,
         });
 
-        const callInstance = videoClient.call("default", callId);
+        callInstance = videoClient.call("default", callId);
 
         await callInstance.join({ create: true });
 
         console.log("Joined call successfully");
 
-        setClient(videoClient);
-        setCall(callInstance);
+        if (isMounted) {
+          setClient(videoClient);
+          setCall(callInstance);
+        }
       } catch (error) {
         console.error("Error joining call:", error);
         toast.error("Could not join the call. Please try again.");
       } finally {
-        setIsConnecting(false);
+        if (isMounted) setIsConnecting(false);
       }
     };
 
     initCall();
+
+    return () => {
+      isMounted = false;
+      if (callInstance) void callInstance.leave();
+      if (videoClient) void videoClient.disconnectUser();
+    };
   }, [tokenData, authUser, callId, isTokenLoading, tokenError]);
 
   if (isLoading || isConnecting) return <PageLoader />;
@@ -105,7 +118,9 @@ const CallContent = () => {
 
   const navigate = useNavigate();
 
-  if (callingState === CallingState.LEFT) return navigate("/");
+  useEffect(() => {
+    if (callingState === CallingState.LEFT) navigate("/", { replace: true });
+  }, [callingState, navigate]);
 
   return (
     <StreamTheme>
