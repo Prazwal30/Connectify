@@ -179,19 +179,7 @@ VITE_API_URL=https://your-backend-domain.com/api
 
 In production, video calls need HTTPS. Stream handles the real-time chat and video infrastructure globally; this backend provides authentication, user data, friend request logic, and Stream tokens.
 
-## Git
+some images of the project 
+<img width="1365" height="716" alt="Screenshot 2026-07-01 122000" src="https://github.com/user-attachments/assets/64bcd6bf-f72c-4173-9d0b-aa6333a10d0b" />
+<img width="393" height="486" alt="Screenshot 2026-07-01 122513" src="https://github.com/user-attachments/assets/2bc86a6a-3c2b-4ef6-aa2e-818344843099" />
 
-After making changes, commit them with:
-
-```bash
-git add .
-git commit -m "your commit message"
-git push
-```
-
-If Git asks for your identity:
-
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "you@example.com"
-```
