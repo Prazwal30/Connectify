@@ -1,69 +1,66 @@
 # Connectify
 
-Connectify is a full-stack chat and video calling app built for making language-learning connections feel more natural. Users can create an account, set up their profile, find people to connect with, send friend requests, chat in real time, and start a video call directly from a conversation.
+Connectify is a place to meet people, chat, and call. Set up a profile with the languages you speak or want to learn, find people to connect with, and start a conversation or video call.
 
-The app uses Stream for real-time messaging and video, while the backend handles authentication, users, friend requests, and secure token generation.
+The app uses Stream for chat and video, with an Express API and MongoDB handling accounts, profiles, and friend requests.
 
-## Features
+## What you can do
 
-- Sign up, log in, and log out with JWT auth stored in HTTP-only cookies
-- Complete onboarding with profile details like bio, location, and languages
-- Discover recommended users and send friend requests
-- Manage friends and incoming/outgoing requests
-- Chat in real time with Stream Chat
-- Start video calls from inside a chat using Stream Video
-- Switch themes with DaisyUI
-- Fetch and cache app data with React Query
-- Store users and friend requests in MongoDB
+- Create an account, sign in, and keep your session in an HTTP-only cookie
+- Add profile details, including a bio and languages
+- Find suggested users and send or respond to friend requests
+- Chat in real time and start a video call from a conversation
+- Change the app’s theme
 
-## Tech Stack
+## Built with
 
-**Frontend**
+- **Frontend:** React, Vite, Tailwind CSS, DaisyUI, React Router, TanStack Query, Zustand, Stream Chat, and Stream Video
+- **Backend:** Node.js, Express, MongoDB with Mongoose, JWT, and the Stream Chat server SDK
 
-- React
-- Vite
-- Tailwind CSS
-- DaisyUI
-- React Router
-- TanStack React Query
-- Stream Chat React
-- Stream Video React SDK
-- Zustand
+## Project layout
 
-**Backend**
-
-- Node.js
-- Express
-- MongoDB / Mongoose
-- JWT
-- Cookie Parser
-- CORS
-- Stream Chat server SDK
-
-## Project Structure
-
-```txt
+```text
 connectify/
-  backend/       Express API, auth, MongoDB, Stream token generation
-  forntend/      React/Vite frontend
-  scripts/       Root development helper scripts
-  package.json   Root scripts for running the full app
+  backend/       Express API, authentication, database, and Stream integration
+  forntend/      React and Vite app (the directory is currently spelled this way)
+  scripts/       Script for starting the frontend and backend together
+  package.json   Root-level development and build commands
 ```
 
-Small note: the frontend folder is currently named `forntend`, so the commands below use that exact spelling.
+## Getting started
 
-## Environment Variables
+You’ll need Node.js, npm, a MongoDB connection string, and Stream API credentials.
 
-Before running the app, create local environment files from the examples:
+1. Clone the repository and open a terminal in its root directory.
+2. Copy the example environment files:
 
-```bash
-copy backend\.env.example backend\.env
-copy forntend\.env.example forntend\.env
-```
+   **PowerShell**
 
-### Backend
+   ```powershell
+   Copy-Item backend\.env.example backend\.env
+   Copy-Item forntend\.env.example forntend\.env
+   ```
 
-`backend/.env`
+   **macOS, Linux, or Git Bash**
+
+   ```bash
+   cp backend/.env.example backend/.env
+   cp forntend/.env.example forntend/.env
+   ```
+
+3. Add your own values to the new `.env` files.
+4. Install dependencies and start the app:
+
+   ```bash
+   npm run install:all
+   npm run dev
+   ```
+
+The frontend is available at `http://localhost:5173` and the API at `http://localhost:3001`. If port 5173 is already in use, Vite may pick another one and print it in the terminal.
+
+## Environment variables
+
+Set these in `backend/.env`:
 
 ```env
 PORT=3001
@@ -75,111 +72,49 @@ STREAM_API_SECRET=your_stream_api_secret
 JWT_SECRET=your_jwt_secret
 ```
 
-### Frontend
-
-`forntend/.env`
+Set these in `forntend/.env`:
 
 ```env
 VITE_STREAM_API_KEY=your_stream_api_key
 VITE_API_URL=http://localhost:3001/api
 ```
 
-Keep real `.env` files private. They contain secrets, so only `.env.example` files should be committed.
+Keep your real `.env` files private. They contain credentials; only the example files belong in the repository.
 
-## Installation
+## Useful commands
 
-Install everything from the root folder:
-
-```bash
-npm run install:all
-```
-
-You can also install each side separately:
-
-```bash
-npm install --prefix backend
-npm install --prefix forntend
-```
-
-## Development
-
-Start the backend and frontend together:
+Run both parts of the app:
 
 ```bash
 npm run dev
 ```
 
-Start only the frontend:
+Run just one part:
 
 ```bash
 npm run dev:frontend
-```
-
-Start only the backend:
-
-```bash
 npm run dev:backend
 ```
 
-Frontend:
-
-```txt
-http://localhost:5173
-```
-
-Backend:
-
-```txt
-http://localhost:3001
-```
-
-If `5173` is already in use, Vite may choose another port such as `5174`.
-
-## Build
-
-Build the frontend from the root folder:
+Build the frontend:
 
 ```bash
 npm run build
 ```
 
-Check the backend syntax:
+The backend package also has a syntax check:
 
 ```bash
 npm --prefix backend run build
 ```
 
-Build frontend only:
+To install dependencies separately instead of using `npm run install:all`, run `npm install --prefix backend` and `npm install --prefix forntend`.
 
-```bash
-npm --prefix forntend run build
-```
+## Deployment
 
-## Production
+Set the backend and frontend environment variables in your hosting provider’s dashboard, using your deployed frontend and API URLs for `CLIENT_URL` and `VITE_API_URL`. Don’t upload local `.env` files. Video calls require HTTPS in production.
 
-For deployment, add the production environment variables in your hosting dashboard. Do not upload your local `.env` files.
+## Screenshots
 
-Backend:
-
-```env
-NODE_ENV=production
-CLIENT_URL=https://your-frontend-domain.com
-MONGO_URI=your_mongodb_connection_string
-STREAM_API_KEY=your_stream_api_key
-STREAM_API_SECRET=your_stream_api_secret
-JWT_SECRET=your_jwt_secret
-```
-
-Frontend:
-
-```env
-VITE_STREAM_API_KEY=your_stream_api_key
-VITE_API_URL=https://your-backend-domain.com/api
-```
-
-In production, video calls need HTTPS. Stream handles the real-time chat and video infrastructure globally; this backend provides authentication, user data, friend request logic, and Stream tokens.
-
-some images of the project 
-<img width="1365" height="716" alt="Screenshot 2026-07-01 122000" src="https://github.com/user-attachments/assets/64bcd6bf-f72c-4173-9d0b-aa6333a10d0b" />
-<img width="393" height="486" alt="Screenshot 2026-07-01 122513" src="https://github.com/user-attachments/assets/2bc86a6a-3c2b-4ef6-aa2e-818344843099" />
-
+<img width="1365" height="716" alt="Connectify home screen" src="https://github.com/user-attachments/assets/64bcd6bf-f72c-4173-9d0b-aa6333a10d0b" />
+<img width="393" height="486" alt="Connectify mobile screen" src="https://github.com/user-attachments/assets/2bc86a6a-3c2b-4ef6-aa2e-818344843099" />
