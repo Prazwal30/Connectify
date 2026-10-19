@@ -1,118 +1,21 @@
 # Connectify
 
-Connectify is a place to meet people, chat, and call. Set up a profile with the languages you speak or want to learn, find people to connect with, and start a conversation or video call.
-
-The app uses Stream for chat and video, with an Express API and MongoDB handling accounts, profiles, and friend requests.
+Connectify helps you meet people, make friends, and keep in touch. Create a profile, find people to connect with, then chat or start a video call.
 
 ## What you can do
 
-- Create an account, sign in, and keep your session in an HTTP-only cookie
-- Add profile details, including a bio and languages
-- Find suggested users and send or respond to friend requests
-- Chat in real time and start a video call from a conversation
-- Change the app’s theme
+- Set up a profile with your bio and languages
+- Discover people and manage friend requests
+- Chat and make video calls
+- Choose a theme that suits you
 
 ## Built with
 
-- **Frontend:** React, Vite, Tailwind CSS, DaisyUI, React Router, TanStack Query, Zustand, Stream Chat, and Stream Video
-- **Backend:** Node.js, Express, MongoDB with Mongoose, JWT, and the Stream Chat server SDK
-
-## Project layout
-
-```text
-connectify/
-  backend/       Express API, authentication, database, and Stream integration
-  forntend/      React and Vite app (the directory is currently spelled this way)
-  scripts/       Script for starting the frontend and backend together
-  package.json   Root-level development and build commands
-```
+React, Vite, Tailwind CSS, and DaisyUI on the frontend; Node.js, Express, and MongoDB on the backend. Chat and video are powered by Stream.
 
 ## Getting started
 
-You’ll need Node.js, npm, a MongoDB connection string, and Stream API credentials.
-
-1. Clone the repository and open a terminal in its root directory.
-2. Copy the example environment files:
-
-   **PowerShell**
-
-   ```powershell
-   Copy-Item backend\.env.example backend\.env
-   Copy-Item forntend\.env.example forntend\.env
-   ```
-
-   **macOS, Linux, or Git Bash**
-
-   ```bash
-   cp backend/.env.example backend/.env
-   cp forntend/.env.example forntend/.env
-   ```
-
-3. Add your own values to the new `.env` files.
-4. Install dependencies and start the app:
-
-   ```bash
-   npm run install:all
-   npm run dev
-   ```
-
-The frontend is available at `http://localhost:5173` and the API at `http://localhost:3001`. If port 5173 is already in use, Vite may pick another one and print it in the terminal.
-
-## Environment variables
-
-Set these in `backend/.env`:
-
-```env
-PORT=3001
-NODE_ENV=development
-CLIENT_URL=http://localhost:5173
-MONGO_URI=your_mongodb_connection_string
-STREAM_API_KEY=your_stream_api_key
-STREAM_API_SECRET=your_stream_api_secret
-JWT_SECRET=your_jwt_secret
-```
-
-Set these in `forntend/.env`:
-
-```env
-VITE_STREAM_API_KEY=your_stream_api_key
-VITE_API_URL=http://localhost:3001/api
-```
-
-Keep your real `.env` files private. They contain credentials; only the example files belong in the repository.
-
-## Useful commands
-
-Run both parts of the app:
-
-```bash
-npm run dev
-```
-
-Run just one part:
-
-```bash
-npm run dev:frontend
-npm run dev:backend
-```
-
-Build the frontend:
-
-```bash
-npm run build
-```
-
-The backend package also has a syntax check:
-
-```bash
-npm --prefix backend run build
-```
-
-To install dependencies separately instead of using `npm run install:all`, run `npm install --prefix backend` and `npm install --prefix forntend`.
-
-## Deployment
-
-Set the backend and frontend environment variables in your hosting provider’s dashboard, using your deployed frontend and API URLs for `CLIENT_URL` and `VITE_API_URL`. Don’t upload local `.env` files. Video calls require HTTPS in production.
+You’ll need Node.js, MongoDB, and Stream API credentials. Use the example environment files in `backend` and `forntend` to configure your local setup. The frontend folder is currently named `forntend`.
 
 ## Screenshots
 
